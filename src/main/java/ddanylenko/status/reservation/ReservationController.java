@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/reservations")
@@ -38,5 +39,30 @@ public class ReservationController {
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation toCreate){
         logger.info("called createReservation");
         return ResponseEntity.status(HttpStatus.CREATED ).header("test-header").body(reservationService.createReservation(toCreate));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Reservation> updateReservation(@PathVariable("id") Long id, @RequestBody Reservation toUpdate){
+        logger.info("called updateReservation with id={}", id);
+        Reservation reservation =  reservationService.updateReservation(id, toUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(reservation);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id){
+        logger.info("called deleteReservation id={}", id);
+        try {
+            reservationService.deleteReservation(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }catch (NoSuchElementException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<Reservation> approveReservation(@PathVariable("id") Long id){
+        logger.info("called approveReservation id={}", id);
+        Reservation reservation = reservationService.approveReservation(id);
+        return ResponseEntity.status(HttpStatus.OK).body(reservation);
     }
 }

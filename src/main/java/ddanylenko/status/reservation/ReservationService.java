@@ -53,4 +53,71 @@ public class ReservationService {
         reservations.put(newReservation.id(), newReservation);
         return newReservation;
     }
+
+    public Reservation updateReservation(Long id, Reservation toUpdate) {
+        if(!reservations.containsKey(id)){
+            throw new NoSuchElementException("Reservation not found by id=" + id);
+        }
+        Reservation reservation = reservations.get(id);
+        if(reservation.reservationStatus() != ReservationStatus.PENDING){
+            throw new IllegalArgumentException("Cannot modify reservation status: " + reservation.reservationStatus()) ;
+        }
+        Reservation updatedReservation = new Reservation(
+                id,
+                toUpdate.userId(),
+                toUpdate.roomId(),
+                toUpdate.startDate(),
+                toUpdate.endDate(),
+                ReservationStatus.PENDING);
+        reservations.put(id, updatedReservation);
+        return updatedReservation;
+    }
+
+    public void deleteReservation(Long id) {
+        if(!reservations.containsKey(id)) {
+            throw new NoSuchElementException("Reservation not found by id=" + id );
+        }
+        reservations.remove(id);
+    }
+
+    public Reservation approveReservation(Long id) {
+        if(!reservations.containsKey(id)) {
+            throw new NoSuchElementException("Reservation not found by id=" + id );
+        }
+        var reservation = reservations.get(id);
+        if(reservation.reservationStatus() != ReservationStatus.PENDING){
+            throw new IllegalArgumentException("Cannot approve reservation status: " + reservation.reservationStatus()) ;
+        }
+        if(isReservationConflict(reservation)) {
+            throw new IllegalArgumentException("Reservation is already in use");
+        }
+        Reservation approvedReservation = new Reservation(
+                id,
+                reservation.userId(),
+                reservation.roomId(),
+                reservation.startDate(),
+                reservation.endDate(),
+                ReservationStatus.APPROVED);
+        reservations.put(id, approvedReservation);
+        return approvedReservation;
+    }
+
+    private boolean isReservationConflict(Reservation reservation) {
+        for(Reservation existing : reservations.values()) {
+            if(existing.id().equals(reservation.id())) {
+                continue;
+            }
+            if(!reservation.roomId().equals(existing.roomId())) {
+                continue;
+            }
+            if(!existing.reservationStatus().equals(ReservationStatus.APPROVED)) {
+                continue;
+            }
+            if(reservation.startDate().isBefore(existing.endDate())
+            && existing.startDate().isBefore(reservation.endDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
