@@ -23,7 +23,7 @@ public class ReservationService {
     }
 
     public Reservation getReservationById(Long id) {
-        ReservationEntity entity = reservationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
+        ReservationEntity entity = reservationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reservation not found by id=" + id));
         return toDomainReservation(entity);
     }
 
@@ -38,6 +38,9 @@ public class ReservationService {
         }
         if(toCreate.reservationStatus() != null){
             throw new IllegalArgumentException("status should be empty");
+        }
+        if(toCreate.roomId() == 10L){
+            throw new RuntimeException("test exception");
         }
         ReservationEntity reservationEntity = new ReservationEntity(
                 null,
