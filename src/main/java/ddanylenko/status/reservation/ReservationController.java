@@ -1,5 +1,6 @@
 package ddanylenko.status.reservation;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,13 @@ public class ReservationController {
     }
 
     @PostMapping()
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation toCreate){
+    public ResponseEntity<Reservation> createReservation(@RequestBody @Valid Reservation toCreate){
         logger.info("called createReservation");
         return ResponseEntity.status(HttpStatus.CREATED ).header("test-header").body(reservationService.createReservation(toCreate));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reservation> updateReservation(@PathVariable("id") Long id, @RequestBody Reservation toUpdate){
+    public ResponseEntity<Reservation> updateReservation(@PathVariable("id") Long id, @RequestBody @Valid Reservation toUpdate){
         logger.info("called updateReservation with id={}", id);
         Reservation reservation =  reservationService.updateReservation(id, toUpdate);
         return ResponseEntity.status(HttpStatus.OK).body(reservation);
