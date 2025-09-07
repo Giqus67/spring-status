@@ -1,4 +1,4 @@
-package ddanylenko.status.reservation;
+package ddanylenko.status.reservation.web;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;

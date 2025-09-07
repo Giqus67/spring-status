@@ -1,4 +1,4 @@
-package ddanylenko.status.reservation;
+package ddanylenko.status.reservation.reservations;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
